@@ -1,0 +1,38 @@
+﻿@model IEnumerable<DMDProject.Models.Article>
+@{
+    ViewBag.Title = "Search";
+}
+<h2>Search for publications!</h2> 
+
+@using (Html.BeginForm())
+{
+    <p>
+        Author: @Html.TextBox("SearchAuthor") 
+        <input type="submit" value="Search" />
+    </p>
+} 
+<table class="table">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.Title)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.PublicationID)
+        </th>
+        <th></th>
+    </tr>
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Title)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.PublicationID)
+            </td>
+            <td>
+                @Html.ActionLink("Details", "Index", new { id = item.ID })
+            </td>
+        </tr>
+    }
+</table>
