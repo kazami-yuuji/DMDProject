@@ -2,22 +2,28 @@
 @{
     ViewBag.Title = "Search";
 }
-<h2>Search for publications!</h2> 
+<div style='margin-right: auto; margin-left: auto;text-align: center'>
+
+<img src="~/Content/konata.jpg" alt="Konata" />
 
 @using (Html.BeginForm())
 {
     <p>
-        Author: @Html.TextBox("SearchAuthor") 
+        @Html.TextBox("SearchString") 
         <input type="submit" value="Search" />
     </p>
 } 
+</div>
 <table class="table">
     <tr>
         <th>
             @Html.DisplayNameFor(model => model.Title)
         </th>
         <th>
-            @Html.DisplayNameFor(model => model.PublicationID)
+            @Html.DisplayNameFor(model => model.Description)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Author)
         </th>
         <th></th>
     </tr>
@@ -28,7 +34,10 @@
                 @Html.DisplayFor(modelItem => item.Title)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.PublicationID)
+                @Html.DisplayFor(modelItem => item.Description)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Author)
             </td>
             <td>
                 @Html.ActionLink("Details", "Index", new { id = item.ID })
@@ -36,3 +45,7 @@
         </tr>
     }
 </table>
+
+<div style='margin-right: auto; margin-left: auto;text-align: center'>
+    @Html.ActionLink("Prev", "Index", new { id = 0 }) | @Html.ActionLink("Next", "Index", new { id = 0 })
+</div>
