@@ -17,6 +17,7 @@
             listItems.Add(new SelectListItem { Text = "Author", Value = "Author" });
             listItems.Add(new SelectListItem { Text = "Article", Value = "Article" });
             listItems.Add(new SelectListItem { Text = "Publication", Value = "Publication" });
+            listItems.Add(new SelectListItem { Text = "Term", Value = "Term" });
         } 
         @Html.DropDownList("SearchMode", new SelectList(listItems, "Value", "Text"))
         <input type="submit" value="Search" />
@@ -35,6 +36,9 @@
                 @Html.DisplayNameFor(model => model.Publication)
             </th>
             <th>
+                @Html.DisplayNameFor(model => model.Terms)
+            </th>
+            <th>
                 @Html.DisplayNameFor(model => model.Authors)
             </th>
             <th></th>
@@ -48,14 +52,26 @@
                 <td>
                     @Html.DisplayFor(modelItem => item.Publication)
                 </td>
-                <td width="150">
+               <td>
+                    @{
+                        string[] terms = item.Terms.Split(new char[] { ';' });
+                        for (int i = 0; i < terms.Length; i++)
+                        {
+                         @Html.ActionLink(terms[i] + " ", "Index", new { searchString = terms[i], searchMode = "Term" })
+                        }
+                }
+               </td>
+                <td width="125">
                     @{
                         string[] authors = item.Authors.Split(new char[] { ';' });
                         for (int i = 0; i < authors.Length; i++)
                         {
-                            @Html.ActionLink(authors[i] + " ", "Index", new { searchString = authors[i], searchMode = "Author" }) <br/>
+                            if (authors[i] != null && authors[i] != string.Empty)
+                            {
+                             @Html.ActionLink(authors[i], "Index", new { searchString = authors[i], searchMode = "Author" }) <br/>
+                            }
                         }
-                    }
+                     }
                 </td>
                 <td>
                     @Html.ActionLink("Details", "Details", new { id = item.ID })

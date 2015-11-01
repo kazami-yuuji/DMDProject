@@ -14,6 +14,7 @@ namespace DMDProject.Controllers
 
         public ActionResult Index(string searchString, string searchMode)
         {
+            // JS protection
             searchString = HttpUtility.HtmlEncode(searchString);
             // Opening connection
             NpgsqlConnection connection = new NpgsqlConnection("Server=127.0.0.1;User Id=postgres;Password=" + PASSWORD + ";Database=project;");
@@ -44,13 +45,19 @@ namespace DMDProject.Controllers
                         mode = "WHERE articles.title LIKE '%" + searchString + "%' " +
                                "GROUP BY articles.id, articles.title, publications.name";
                         break;
+                    case "Term":
+                        mode = "WHERE thesaurus_terms.text LIKE '%" + searchString + "%' " +
+                               "GROUP BY articles.id, articles.title, publications.name";
+                        break;
                 }
                 // Execute querry
-                NpgsqlCommand command = new NpgsqlCommand("SELECT  articles.id, articles.title, publications.name, string_agg(authors.name,';') " +
+                NpgsqlCommand command = new NpgsqlCommand("SELECT  articles.id, articles.title, publications.name, string_agg(DISTINCT authors.name,';'), string_agg(DISTINCT thesaurus_terms.text, ';')  " +
                                                           "FROM articles " +
                                                           "INNER JOIN authors_of_article ON articles.id = authors_of_article.article_id " +
                                                           "INNER JOIN authors ON authors_of_article.author_id = authors.id " +
                                                           "INNER JOIN publications ON articles.publication_id = publications.id " +
+                                                          "INNER JOIN thesaurus_terms_in_article ON articles.id = thesaurus_terms_in_article.article_id " +
+                                                          "INNER JOIN thesaurus_terms ON thesaurus_terms_in_article.thesaurus_term_id = thesaurus_terms.id " +
                                                           mode, connection);
                 NpgsqlDataReader reader = command.ExecuteReader();
                 // Read the data
@@ -61,6 +68,7 @@ namespace DMDProject.Controllers
                     current.Title = (string)reader[1];
                     current.Publication = (string)reader[2];
                     current.Authors = (string)reader[3];
+                    current.Terms = (string)reader[4];
                     articles.Add(current);
                 }
             }
@@ -74,11 +82,13 @@ namespace DMDProject.Controllers
             connection.Open();
             // Getting required article
             Article current = new Article();
-            NpgsqlCommand command = new NpgsqlCommand("SELECT articles.id, articles.title, publications.name, articles.description, articles.mdurl, articles.pdf, string_agg(authors.name,';')" +
+            NpgsqlCommand command = new NpgsqlCommand("SELECT articles.id, articles.title, publications.name, articles.description, articles.mdurl, articles.pdf, string_agg(DISTINCT authors.name, ';'), string_agg(DISTINCT thesaurus_terms.text, ';') " +
                                                       "FROM articles " +
                                                       "INNER JOIN authors_of_article ON articles.id = authors_of_article.article_id " +
                                                       "INNER JOIN authors ON authors_of_article.author_id = authors.id " +
                                                       "INNER JOIN publications ON articles.publication_id = publications.id " +
+                                                      "INNER JOIN thesaurus_terms_in_article ON articles.id = thesaurus_terms_in_article.article_id " +
+                                                      "INNER JOIN thesaurus_terms ON thesaurus_terms_in_article.thesaurus_term_id = thesaurus_terms.id " +
                                                       "WHERE articles.id = " + id + " " +
                                                       "GROUP BY articles.id, articles.title, publications.name, articles.description, articles.mdurl, articles.pdf", connection);
             NpgsqlDataReader reader = command.ExecuteReader();
@@ -91,6 +101,7 @@ namespace DMDProject.Controllers
                 current.MDURL = (string)reader[4];
                 current.PDF = (string)reader[5];
                 current.Authors = (string)reader[6];
+                current.Terms = (string)reader[7];
             }
             ViewBag.Article = current;
             return View();

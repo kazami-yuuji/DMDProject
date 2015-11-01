@@ -12,6 +12,7 @@ namespace DMDProject.Models
         public string Authors { get; set; }
         public string Publication { get; set; }
         public string Description { get; set; }
+        public string Terms { get; set; }
         public string MDURL { get; set; }
         public string PDF { get; set; }
     }
