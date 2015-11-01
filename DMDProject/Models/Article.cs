@@ -9,10 +9,10 @@ namespace DMDProject.Models
     {
         public int ID { get; set; }
         public string Title { get; set; }
-        public string Author { get; set; }
+        public string Authors { get; set; }
+        public string Publication { get; set; }
         public string Description { get; set; }
-        //public string MDURL { get; set; }
-       // public string PDF { get; set; }
-       // public int PublicationID { get; set; }
+        public string MDURL { get; set; }
+        public string PDF { get; set; }
     }
 }

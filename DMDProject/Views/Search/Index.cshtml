@@ -2,6 +2,7 @@
 @{
     ViewBag.Title = "Search";
 }
+<br/>
 <div style='margin-right: auto; margin-left: auto;text-align: center'>
 
 <img src="~/Content/konata.jpg" alt="Konata" />
@@ -10,42 +11,60 @@
 {
     <p>
         @Html.TextBox("SearchString") 
+        @{
+            List<SelectListItem> listItems = new List<SelectListItem>();
+            listItems.Add(new SelectListItem { Text = "All", Value = "All" });
+            listItems.Add(new SelectListItem { Text = "Author", Value = "Author" });
+            listItems.Add(new SelectListItem { Text = "Article", Value = "Article" });
+            listItems.Add(new SelectListItem { Text = "Publication", Value = "Publication" });
+        } 
+        @Html.DropDownList("SearchMode", new SelectList(listItems, "Value", "Text"))
         <input type="submit" value="Search" />
-    </p>
+</p>
 } 
 </div>
-<table class="table">
-    <tr>
-        <th>
-            @Html.DisplayNameFor(model => model.Title)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.Description)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.Author)
-        </th>
-        <th></th>
-    </tr>
-    @foreach (var item in Model)
-    {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Title)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Description)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Author)
-            </td>
-            <td>
-                @Html.ActionLink("Details", "Index", new { id = item.ID })
-            </td>
-        </tr>
-    }
-</table>
 
-<div style='margin-right: auto; margin-left: auto;text-align: center'>
-    @Html.ActionLink("Prev", "Index", new { id = 0 }) | @Html.ActionLink("Next", "Index", new { id = 0 })
-</div>
+@if (Model.Count() != 0)
+{
+    <table class="table">
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Title)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Publication)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Authors)
+            </th>
+            <th></th>
+        </tr>
+        @foreach (var item in Model)
+        {
+           <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Title)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Publication)
+                </td>
+                <td width="150">
+                    @{
+                        string[] authors = item.Authors.Split(new char[] { ';' });
+                        for (int i = 0; i < authors.Length; i++)
+                        {
+                            @Html.ActionLink(authors[i] + " ", "Index", new { searchString = authors[i], searchMode = "Author" }) <br/>
+                        }
+                    }
+                </td>
+                <td>
+                    @Html.ActionLink("Details", "Details", new { id = item.ID })
+                </td>
+            </tr>
+        }
+    </table>
+
+    <div style='margin-right: auto; margin-left: auto;text-align: center'>
+        @Html.ActionLink("Prev", "Index", new { id = 0 }) | @Html.ActionLink("Next", "Index", new { id = 0 })
+    </div>
+}
